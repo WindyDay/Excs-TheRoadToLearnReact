@@ -20,16 +20,55 @@ const list = [
   },
 ];
 
+// // ES5
+// function isSearched(searchTerm) {
+//   return function(item) {
+//     return item.title.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1;
+//   }
+// }
+
+const isSearched = searchTerm => item =>
+  item.title.toLowerCase().includes(searchTerm.toLowerCase());
+  
 class App extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      list:list,
+      searchTerm: '',
+    }
+
+    this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  onDismiss(id){
+    const updatedList = this.state.list.filter(item => item.objectID !== id);
+    this.setState({list: updatedList});
+  }
+  
+  onSeachChange = (event)=>{
+    this.setState({
+      searchTerm: event.target.value,
+    })
+  }
+
   render() {
     let helloWord = "Welcome to the Road to learn react";
 
     return (
       <div className="App">
         <h1>{helloWord}</h1>
-        {list.map(item=>
+        <form>
+          <input type="search" onChange={this.onSeachChange}/>
+        </form>
+        {this.state.list.filter(isSearched(this.state.searchTerm)).map(item=>
             <div key={item.objectID}>
               <a href={item.url}>{item.title} - {item.author} - {item.points} point - {item.num_comments} cmt</a>
+              <button
+                onClick={()=>this.onDismiss(item.objectID)}
+              >
+                Dismiss
+              </button>
             </div>
         )}
       </div>
