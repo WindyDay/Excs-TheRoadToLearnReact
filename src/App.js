@@ -30,10 +30,6 @@ const list = [
 //   }
 // }
 
-const isSearched = searchTerm => item =>{
-  return  item.title.toLowerCase().includes(searchTerm.toLowerCase())
-        ||item.author.toLowerCase().includes(searchTerm.toLowerCase());
-}
   
 class App extends Component {
   constructor(props){
@@ -70,7 +66,6 @@ class App extends Component {
         <hr/>
         <Table  list={list} 
                 onDismiss={this.onDismiss}
-                isSearched={isSearched}
                 searchTerm={searchTerm}
         />
       </div>

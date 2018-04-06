@@ -7,7 +7,7 @@ export function Search({searchTerm, className, onSeachChange, children}) {
                 className={className}
                 value={searchTerm}
                 onChange={onSeachChange}
-                placeHolder={children}
+                placeholder={children}
             />
       </form>
     )
