@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Search from './Search'
+import Table from './Table'
 const list = [
   {
     title: 'React',
@@ -54,23 +57,19 @@ class App extends Component {
 
   render() {
     let helloWord = "Welcome to the Road to learn react";
-
+    const {list, searchTerm} = this.state;
     return (
-      <div className="App">
+      <div className="App container">
         <h1>{helloWord}</h1>
-        <form>
-          <input type="search" onChange={this.onSeachChange}/>
-        </form>
-        {this.state.list.filter(isSearched(this.state.searchTerm)).map(item=>
-            <div key={item.objectID}>
-              <a href={item.url}>{item.title} - {item.author} - {item.points} point - {item.num_comments} cmt</a>
-              <button
-                onClick={()=>this.onDismiss(item.objectID)}
-              >
-                Dismiss
-              </button>
-            </div>
-        )}
+        <Search searchTerm={searchTerm} onSeachChange={this.onSeachChange}>
+          Search 
+        </Search>
+        <hr/>
+        <Table  list={list} 
+                onDismiss={this.onDismiss}
+                isSearched={isSearched}
+                searchTerm={searchTerm}
+        />
       </div>
     );
   }
