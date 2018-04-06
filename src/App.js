@@ -30,8 +30,10 @@ const list = [
 //   }
 // }
 
-const isSearched = searchTerm => item =>
-  item.title.toLowerCase().includes(searchTerm.toLowerCase());
+const isSearched = searchTerm => item =>{
+  return  item.title.toLowerCase().includes(searchTerm.toLowerCase())
+        ||item.author.toLowerCase().includes(searchTerm.toLowerCase());
+}
   
 class App extends Component {
   constructor(props){
@@ -56,13 +58,14 @@ class App extends Component {
   }
 
   render() {
-    let helloWord = "Welcome to the Road to learn react";
+    let helloWord = 'Welcome to "The road to learn React"';
     const {list, searchTerm} = this.state;
     return (
       <div className="App container">
         <h1>{helloWord}</h1>
-        <Search searchTerm={searchTerm} onSeachChange={this.onSeachChange}>
-          Search 
+        <br/>
+        <Search className={'form-control'} searchTerm={searchTerm} onSeachChange={this.onSeachChange}>
+          Enter something here to start searching 
         </Search>
         <hr/>
         <Table  list={list} 
