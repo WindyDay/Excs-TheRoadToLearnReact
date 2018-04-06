@@ -4,71 +4,82 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Search from './Search'
 import Table from './Table'
-const list = [
-  {
-    title: 'React',
-    url: 'https://facebook.github.io/react/',
-    author: 'Jordan Walke',
-    num_comments: 3,
-    points: 4,
-    objectID: 0,
-  },
-  {
-    title: 'Redux',
-    url: 'https://github.com/reactjs/redux',
-    author: 'Dan Abramov, Andrew Clark',
-    num_comments: 2,
-    points: 5,
-    objectID: 1,
-  },
-];
 
-// // ES5
-// function isSearched(searchTerm) {
-//   return function(item) {
-//     return item.title.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1;
-//   }
-// }
+const DEFAULT_QUERY = 'redux';
 
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
+
+const queryURL = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`;
   
 class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      list:list,
-      searchTerm: '',
+      result: null,
+      searchTerm: DEFAULT_QUERY,
     }
 
-    this.onDismiss = this.onDismiss.bind(this);
+    // this.setSearchTopStories = this.setSearchTopStories.bind(this);
   }
 
-  onDismiss(id){
-    const updatedList = this.state.list.filter(item => item.objectID !== id);
-    this.setState({list: updatedList});
+  onDismiss = (id) =>{
+    const updatedList = this.state.result.hits.filter(item => item.objectID !== id);
+
+    // const result = Object.assign({}, this.state.result, {hits: updatedList});
+    const result = {...this.state.result, hits:updatedList}
+    this.setState({result: result});
   }
   
   onSeachChange = (event)=>{
     this.setState({
       searchTerm: event.target.value,
     })
+    console.log('searchTerm: ' + this.state.searchTerm);
+  }
+
+  onSearchSubmit = (event) =>{
+    this.fetchTopStories(this.state.searchTerm);
+    event.preventDefault();
+    
+  }
+
+  setSearchTopStories = (result) => {
+    this.setState({ result });
+  }
+
+  fetchTopStories = (searchTerm)=>{
+    fetch(queryURL+searchTerm)
+    .then(res=>res.json())
+    .then(result => this.setSearchTopStories(result))
+    .catch(error => error);
+  }
+
+  componentDidMount(){
+    const {searchTerm} = this.state;
+    this.fetchTopStories(searchTerm);   
   }
 
   render() {
     let helloWord = 'Welcome to "The road to learn React"';
-    const {list, searchTerm} = this.state;
+    const {result, searchTerm} = this.state;
+    //if(!result) return 'Waiting for API response';
     return (
       <div className="App container">
         <h1>{helloWord}</h1>
         <br/>
-        <Search className={'form-control'} searchTerm={searchTerm} onSeachChange={this.onSeachChange}>
+        <Search className={'form-control'} searchTerm={searchTerm} onSeachChange={this.onSeachChange} onSubmit={this.onSearchSubmit}>
           Enter something here to start searching 
         </Search>
         <hr/>
-        <Table  list={list} 
+        {result && 
+        <Table  list={result.hits} 
                 onDismiss={this.onDismiss}
-                searchTerm={searchTerm}
         />
+      }
       </div>
+        
     );
   }
 }

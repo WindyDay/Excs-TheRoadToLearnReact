@@ -1,21 +1,21 @@
 import React, {Component} from 'react'
 import Button from './Button'
+import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export class Table extends Component {
 
-    isSearched = searchTerm => item => {
-        console.log(this);
-        return item
-            .title
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) || item
-            .author
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-    }
+    // isSearched = searchTerm => item => {
+    //     return item
+    //         .title
+    //         .toLowerCase()
+    //         .includes(searchTerm.toLowerCase()) || item
+    //         .author
+    //         .toLowerCase()
+    //         .includes(searchTerm.toLowerCase());
+    // }
     render() {
-        const {list, searchTerm, onDismiss} = this.props;
+        const {list, onDismiss} = this.props;
         return (
             <div>
                 <table className='table'>
@@ -31,7 +31,7 @@ export class Table extends Component {
                     </thead>
                     <tbody>
                         {list
-                            .filter(this.isSearched(searchTerm))
+                            // .filter(this.isSearched(searchTerm))
                             .map(item => <tr key={item.objectID}>
                                 <td>{item.objectID}</td>
                                 <td>
@@ -41,7 +41,7 @@ export class Table extends Component {
                                 <td>{item.num_comments}</td>
                                 <td>{item.points}</td>
                                 <td>
-                                    <Button onClick={() => onDismiss(item.objectID)}>
+                                    <Button onClick={() => onDismiss(item.objectID)} className='btn btn-danger'>
                                         Dismiss
                                     </Button>
                                 </td>

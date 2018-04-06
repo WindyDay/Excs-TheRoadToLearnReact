@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 
 export class Button extends Component {
   render() {
-      const {children, className = '', onClick} = this.props;
+      const {type = 'button', children, className = '', onClick} = this.props;
     return (
       <div>
         <button
+            type = {type}
             className = {className}
             onClick={onClick}
         >
