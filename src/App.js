@@ -19,6 +19,7 @@ const PARAM_HPP = 'hitsPerPage=';
 const queryURL = `${PATH_BASE}${PATH_SEARCH}`;
 
 class App extends Component {
+  __isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -96,11 +97,13 @@ class App extends Component {
   fetchTopStories = (searchTerm, page = '0') => {
     // console.log('Fetching');
     axios(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
-      .then(result => this.setSearchTopStories(result.data))
-      .catch(error => this.setState({error}));
+      .then(result => this.__isMounted && this.setSearchTopStories(result.data))
+      .catch(error => this.__isMounted && this.setState({error}));
   }
 
   componentDidMount() {
+    this.__isMounted = true;
+    
     const {searchTerm} = this.state;
     this.fetchTopStories(searchTerm);
   }
