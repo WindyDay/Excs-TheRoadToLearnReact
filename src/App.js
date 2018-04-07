@@ -22,7 +22,8 @@ class App extends Component {
   constructor(props){
     super(props);
     this.state = {
-      result: null,
+      results: null,
+      searchKey: DEFAULT_QUERY,
       searchTerm: DEFAULT_QUERY,
     }
 
@@ -30,11 +31,16 @@ class App extends Component {
   }
 
   onDismiss = (id) =>{
-    const updatedList = this.state.result.hits.filter(item => item.objectID !== id);
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey];
 
-    // const result = Object.assign({}, this.state.result, {hits: updatedList});
-    const result = {...this.state.result, hits:updatedList}
-    this.setState({result: result});
+    const updatedList = hits.filter(item => item.objectID !== id);
+
+    // const result = Object.assign({}, this.state.result, {hits: updatedList})
+    this.setState({results: {
+      ...results,
+      [searchKey]:{hits:updatedList, page}
+    }});
   }
   
   onSeachChange = (event)=>{
@@ -44,26 +50,45 @@ class App extends Component {
   }
 
   onSearchSubmit = (event) =>{
-    this.fetchTopStories(this.state.searchTerm);
+    const {results, searchTerm}= this.state;
+    
+    this.setState({searchKey: searchTerm});
+
+    if(results && !results[searchTerm]){
+      console.log(searchTerm);
+      this.fetchTopStories(searchTerm);
+    }
     event.preventDefault();
     
   }
 
   setSearchTopStories = (result) => {
     
-    const {hits, page} = result;
+    const { hits, page } = result;
+    const { searchKey, results } = this.state;
 
-    const oldHits = page === 0 ? [] : this.state.result.hits;
+
+    const oldHits = results && results[searchKey]
+    ? results[searchKey].hits
+    : [];
+    
     const updatedHits = [
       ...oldHits,
       ...hits
     ];
     
-    this.setState({ result : {hits: updatedHits, page}});
+    console.log('updatedHits: ');
+    console.log(updatedHits);
+    this.setState({ results : {
+      ...results,
+      [searchKey]:{hits: updatedHits, page}
+    }});
 
+    
   }
 
   fetchTopStories = (searchTerm, page='0')=>{
+    console.log('Fetching');
     fetch(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
     .then(res=>res.json())
     .then(result => this.setSearchTopStories(result))
@@ -77,8 +102,8 @@ class App extends Component {
 
   render() {
     let helloWord = 'Welcome to "The road to learn React"';
-    const {result, searchTerm} = this.state;
-    const page = (result && result.page) || 0;
+    const {results, searchKey, searchTerm} = this.state;
+    const page = (results && results[searchKey] && results[searchKey].page) || 0;
     //if(!result) return 'Waiting for API response';
     return (
       <div className="App container">
@@ -88,14 +113,15 @@ class App extends Component {
           Enter something here to start searching 
         </Search>
         <hr/>
-        {result && 
-        <Table  list={result.hits} 
+        {results && results[searchKey] && results[searchKey].hits &&
+        <Table  list={results[searchKey].hits} 
                 onDismiss={this.onDismiss}
         />
         }
         <div className='center-block'>
           <Button className='btn btn-success' onClick={()=>this.fetchTopStories(searchTerm, page+1)}>Read more</Button>
         </div>
+        <hr/>
       </div>
         
     );
