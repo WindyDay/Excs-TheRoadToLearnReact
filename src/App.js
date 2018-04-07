@@ -2,9 +2,10 @@ import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Search from './Search'
-import Table from './Table'
-import Button from './Button'
+import Search from './Search';
+import Table from './Table';
+import Button from './Button';
+import axios from 'axios';
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_HPP = '60';
@@ -94,9 +95,8 @@ class App extends Component {
 
   fetchTopStories = (searchTerm, page = '0') => {
     // console.log('Fetching');
-    fetch(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
-      .then(res => res.json())
-      .then(result => this.setSearchTopStories(result))
+    axios(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
+      .then(result => this.setSearchTopStories(result.data))
       .catch(error => this.setState({error}));
   }
 
