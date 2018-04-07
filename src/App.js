@@ -4,14 +4,19 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Search from './Search'
 import Table from './Table'
+import Button from './Button'
+
 
 const DEFAULT_QUERY = 'redux';
+const DEFAULT_HPP = '60';
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
+const PARAM_HPP = 'hitsPerPage=';
 
-const queryURL = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}`;
+const queryURL = `${PATH_BASE}${PATH_SEARCH}`;
   
 class App extends Component {
   constructor(props){
@@ -36,7 +41,6 @@ class App extends Component {
     this.setState({
       searchTerm: event.target.value,
     })
-    console.log('searchTerm: ' + this.state.searchTerm);
   }
 
   onSearchSubmit = (event) =>{
@@ -46,11 +50,21 @@ class App extends Component {
   }
 
   setSearchTopStories = (result) => {
-    this.setState({ result });
+    
+    const {hits, page} = result;
+
+    const oldHits = page === 0 ? [] : this.state.result.hits;
+    const updatedHits = [
+      ...oldHits,
+      ...hits
+    ];
+    
+    this.setState({ result : {hits: updatedHits, page}});
+
   }
 
-  fetchTopStories = (searchTerm)=>{
-    fetch(queryURL+searchTerm)
+  fetchTopStories = (searchTerm, page='0')=>{
+    fetch(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
     .then(res=>res.json())
     .then(result => this.setSearchTopStories(result))
     .catch(error => error);
@@ -64,6 +78,7 @@ class App extends Component {
   render() {
     let helloWord = 'Welcome to "The road to learn React"';
     const {result, searchTerm} = this.state;
+    const page = (result && result.page) || 0;
     //if(!result) return 'Waiting for API response';
     return (
       <div className="App container">
@@ -77,7 +92,10 @@ class App extends Component {
         <Table  list={result.hits} 
                 onDismiss={this.onDismiss}
         />
-      }
+        }
+        <div className='center-block'>
+          <Button className='btn btn-success' onClick={()=>this.fetchTopStories(searchTerm, page+1)}>Read more</Button>
+        </div>
       </div>
         
     );
