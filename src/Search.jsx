@@ -2,11 +2,19 @@ import React, {Component} from 'react'
 import Button from './Button'
 
 export class Search extends Component {
+    constructor(props){
+        super(props);
+        this.input = React.createRef();
+    }
     componentDidMount(){
         if(this.input){
-            this.input.focus();
+            this.input.current.focus();
         }
     }
+    
+    // focus = ()=>{
+    //     this
+    // }
 
     render() {
         const {searchTerm, className, onSeachChange, onSubmit, children} = this.props;
@@ -20,7 +28,7 @@ export class Search extends Component {
                             value={searchTerm}
                             onChange={onSeachChange}
                             placeholder={children.text}
-                            ref = {(node) =>{ this.input = node}}
+                            ref = {this.input}
                             />
                     </div>
                     <div className='col-md-1'>
