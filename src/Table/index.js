@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import Button from './Button'
-import './App.css'
+import Button from '../Button'
+import './index.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export class Table extends Component {

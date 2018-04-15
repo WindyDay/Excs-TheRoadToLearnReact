@@ -1,20 +1,22 @@
 import React, {Component} from 'react';
 import logo from './logo.svg';
-import './App.css';
+import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Search from './Search';
-import Table from './Table';
-import Button from './Button';
+import Search from '../Search';
+import Table from '../Table';
+import Button from '../Button';
 import axios from 'axios';
 
-const DEFAULT_QUERY = 'redux';
-const DEFAULT_HPP = '60';
+import {
+  DEFAULT_QUERY,
+  DEFAULT_HPP,
+  PATH_BASE,
+  PATH_SEARCH,
+  PARAM_SEARCH,
+  PARAM_PAGE,
+  PARAM_HPP
+} from '../Constant'
 
-const PATH_BASE = 'https://hn.algolia.com/api/v1';
-const PATH_SEARCH = '/search';
-const PARAM_SEARCH = 'query=';
-const PARAM_PAGE = 'page=';
-const PARAM_HPP = 'hitsPerPage=';
 
 const queryURL = `${PATH_BASE}${PATH_SEARCH}`;
 
