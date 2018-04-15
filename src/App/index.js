@@ -17,8 +17,9 @@ import {
   PARAM_HPP
 } from '../Constant'
 
-
 const queryURL = `${PATH_BASE}${PATH_SEARCH}`;
+
+const Loading = () => <div>Loading ...</div>
 
 class App extends Component {
   __isMounted = false;
@@ -29,6 +30,7 @@ class App extends Component {
       searchKey: DEFAULT_QUERY,
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false
     }
 
     // this.setSearchTopStories = this.setSearchTopStories.bind(this);
@@ -91,13 +93,15 @@ class App extends Component {
           hits: updatedHits,
           page
         }
-      }
+      },
+      isLoading:false
     });
 
   }
 
   fetchTopStories = (searchTerm, page = '0') => {
     // console.log('Fetching');
+    this.setState({isLoading: true})
     axios(`${queryURL}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
       .then(result => this.__isMounted && this.setSearchTopStories(result.data))
       .catch(error => this.__isMounted && this.setState({error}));
@@ -105,41 +109,45 @@ class App extends Component {
 
   componentDidMount() {
     this.__isMounted = true;
-    
+
     const {searchTerm} = this.state;
     this.fetchTopStories(searchTerm);
   }
 
   render() {
-      let helloWord = 'Welcome to "The road to learn React"';
-      const {results, searchKey, searchTerm, error} = this.state;
-      const page = (results && results[searchKey] && results[searchKey].page) || 0;
-      //if(!result) return 'Waiting for API response';
+    let helloWord = 'Welcome to "The road to learn React"';
+    const {results, searchKey, searchTerm, error, isLoading} = this.state;
+    const page = (results && results[searchKey] && results[searchKey].page) || 0;
+    //if(!result) return 'Waiting for API response';
 
-      if (error) {
-        return <h2>Something went wrong with API communication!</h2>
-      }
-      return (
-        <div className="App container">
-          <h1>{helloWord}</h1>
-          <br/>
-          <Search
-            className={'form-control'}
-            searchTerm={searchTerm}
-            onSeachChange={this.onSeachChange}
-            onSubmit={this.onSearchSubmit}>
-            Enter something here to start searching
-          </Search>
-          <hr/> {results && results[searchKey] && results[searchKey].hits && <Table list={results[searchKey].hits} onDismiss={this.onDismiss}/>
+    if (error) {
+      return <h2>Something went wrong with API communication!</h2>
+    }
+    return (
+      <div className="App container">
+        <h1>{helloWord}</h1>
+        <br/>
+        <Search
+          className={'form-control'}
+          searchTerm={searchTerm}
+          onSeachChange={this.onSeachChange}
+          onSubmit={this.onSearchSubmit}>
+          Enter something here to start searching
+        </Search>
+        <hr/> {results && results[searchKey] && results[searchKey].hits && <Table list={results[searchKey].hits} onDismiss={this.onDismiss}/>
 }
-          <div className='center-block'>
-            <Button
+        <div className='center-block'>
+          {isLoading
+            ? <Loading/>
+            : <Button
               className='btn btn-success'
-              onClick={() => this.fetchTopStories(searchTerm, page + 1)}>Read more</Button>
-          </div>
-          <hr/>
+              onClick={() => this.fetchTopStories(searchTerm, page + 1)}>Read more
+            </Button>
+}
         </div>
-      );
+        <hr/>
+      </div>
+    );
   }
 }
 
