@@ -6,6 +6,9 @@ import Search from '../Search';
 import Table from '../Table';
 import Button from '../Button';
 import axios from 'axios';
+// import fontawesome from '@fortawesome/fontawesome'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faSpinner from '@fortawesome/fontawesome-free-solid/faSpinner'
 
 import {
   DEFAULT_QUERY,
@@ -19,7 +22,7 @@ import {
 
 const queryURL = `${PATH_BASE}${PATH_SEARCH}`;
 
-const Loading = () => <div>Loading ...</div>
+const Loading = () => <FontAwesomeIcon icon={faSpinner} spin />
 
 class App extends Component {
   __isMounted = false;
